@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Layout Tools Preview</title>
+  <link rel="stylesheet" href="preview.css" />
+</head>
+<body>
+  <header>
+    <div class="title">
+      <span class="eyebrow">Docs Preview</span>
+      <h1>Dashboard Layout Tools and Rendering Controls</h1>
+    </div>
+    <div class="controls">
+      <label for="source">Source</label>
+      <select id="source">
+        <option value="dashboard_layout_tools.md">dashboard_layout_tools.md</option>
+      </select>
+      <button id="reload">Reload</button>
+    </div>
+  </header>
+
+  <main>
+    <article id="content" aria-label="Markdown preview"></article>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+    const content = document.getElementById('content');
+    const select = document.getElementById('source');
+    const reload = document.getElementById('reload');
+
+    async function renderMarkdown(path) {
+      content.innerHTML = '<p class="muted">Loading…</p>';
+      try {
+        const response = await fetch(path);
+        if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+        const text = await response.text();
+        content.innerHTML = marked.parse(text, { mangle: false, headerIds: true });
+      } catch (error) {
+        content.innerHTML = `<div class="error">Failed to load <code>${path}</code>: ${error.message}</div>`;
+      }
+    }
+
+    reload.addEventListener('click', () => renderMarkdown(select.value));
+    renderMarkdown(select.value);
+  </script>
+</body>
+</html>
